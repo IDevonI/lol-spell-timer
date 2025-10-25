@@ -21,10 +21,19 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.lolspelltimer"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "expo": {
+      "web": {
+        "bundler": "metro"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
