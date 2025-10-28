@@ -2,18 +2,17 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  Button,
   TouchableOpacity,
   ImageBackground,
   Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts, Cinzel_700Bold } from "@expo-google-fonts/cinzel";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Account } from '../types/index';
+import CustomPicker from "../components/CustomPicker";
 
 const STORAGE_KEY = "@lol_accounts";
 
@@ -22,7 +21,6 @@ type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [savedAccounts, setSavedAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account>({} as Account);
-
   const [fontsLoaded] = useFonts({ Cinzel_700Bold });
 
   useEffect(() => {
@@ -41,11 +39,47 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   const handleNext = () => {
     if (selectedAccount.puuid) {
-      navigation.navigate('Game', { account: selectedAccount });
+      navigation.navigate('Profile', { account: selectedAccount });
     } else {
       Alert.alert("Error", "No account selected or available.");
     }
   };
+
+  const handleDeleteAccount = async (puuidToDelete: string) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this account?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            const updatedAccounts = savedAccounts.filter(
+              (account) => account.puuid !== puuidToDelete
+            );
+            setSavedAccounts(updatedAccounts);
+            await saveAccountsToStorage(updatedAccounts);
+            setSelectedAccount(updatedAccounts[0] || ({} as Account));
+            if (updatedAccounts.length === 0) setSelectedAccount({} as Account);
+          },
+        },
+      ]
+    );
+  };
+
+  const saveAccountsToStorage = async (accounts: Account[]) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+    } catch (e) {
+      console.log("Error saving accounts:", e);
+      Alert.alert("Error", "Failed to save accounts.");
+    }
+  };
+
+  const handelSelectAccount = async (account: Account) => setSelectedAccount(account);
+
+  const handleAddAccount = () => navigation.navigate("Login");
 
   if (!fontsLoaded) {
     return (
@@ -83,27 +117,22 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </Text>
         </View>
 
-        <View className="bg-leaguePanel rounded-xl mb-8 w-full">
-          <Picker
-            selectedValue={selectedAccount.puuid || ""} // Use puuid as the value
-            onValueChange={(value) => {
-              const account = savedAccounts.find(a => a.puuid === value);
-              setSelectedAccount(account || {} as Account);
-            }}
-            dropdownIconColor="white"
-            style={{ color: "white" }}
-          >
-            {savedAccounts.map((a) => (
-              <Picker.Item key={a.puuid} label={`${a.username}#${a.tag} (${a.region})`} value={a.puuid} />
-            ))}
-          </Picker>
-          <Button title="Add Account" onPress={() => navigation.navigate('Login')} />
-        </View>
+        <CustomPicker<Account>
+          items={savedAccounts}
+          selectedItem={selectedAccount}
+          onSelect={handelSelectAccount}
+          onDelete={handleDeleteAccount}
+          renderItemLabel={(account: Account) => `${account.gameName}#${account.tagLine} (${account.region})`}
+          keyExtractor={(item: Account, index) => item.puuid || index.toString()}
+          navigation={navigation}
+          placeholder="Select an account"
+          onPressButton={handleAddAccount}
+        />
 
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={handleNext}
-          className="overflow-hidden shadow-lg shadow-black/40 w-full mt-4 px-10"
+          className="overflow-hidden shadow-lg shadow-black/40 w-64 mt-4"
         >
           <LinearGradient
             colors={["#1b1b1b", "#2b2b2b"]}

@@ -4,4 +4,5 @@ export type RootStackParamList = {
   Home: undefined;
   Login: undefined;
   Game: { account: Account };
+  Profile: { account: Account };
 };

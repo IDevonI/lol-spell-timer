@@ -14,7 +14,7 @@ import { useFonts, Cinzel_700Bold } from "@expo-google-fonts/cinzel";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Account } from '../types/index';
-import { getSummoner } from '../services/api';
+import { getAccount } from '../services/riotService';
 
 const regions = [
   { label: "EU West (EUW1)", value: "euw1" },
@@ -35,8 +35,8 @@ const STORAGE_KEY = "@lol_accounts";
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
-  const [username, setUsername] = useState("");
-  const [tag, setTag] = useState("");
+  const [gameName, setGameName] = useState("");
+  const [tagLine, setTagLine] = useState("");
   const [region, setRegion] = useState("euw1");
   const [accounts, setAccounts] = useState<Account[]>([]);
 
@@ -64,18 +64,18 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   };
 
   const handleSave = async () => {
-    if (!username.trim() || !tag.trim()) {
-      Alert.alert("Warning", "Please enter both Summoner Name and Tag.");
+    if (!gameName.trim() || !tagLine.trim()) {
+      Alert.alert("Warning", "Please enter both Summoner Name and tagLine.");
       return;
     }
 
     try {
-      const summonerData = await getSummoner(region, `${username}#${tag}`);
+      const summonerData = await getAccount(gameName.trim(), tagLine.trim());
 
       const exists = accounts.find(
         (acc) =>
-          acc.username.toLowerCase() === username.toLowerCase() &&
-          acc.tag === tag &&
+          acc.gameName.toLowerCase() === gameName.toLowerCase() &&
+          acc.tagLine === tagLine &&
           acc.region === region
       );
 
@@ -84,8 +84,8 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       }
 
       const newAccount: Account = {
-        username,
-        tag,
+        gameName,
+        tagLine,
         region,
         puuid: summonerData.puuid,
       };
@@ -94,10 +94,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       await saveAccountsToStorage(updatedAccounts);
 
       Alert.alert("Success", "Account saved!");
-      setUsername("");
-      setTag("");
+      setGameName("");
+      setTagLine("");
       setRegion("euw1");
-      navigation.navigate("Game", { account: newAccount });
+      navigation.goBack();
     } catch (e) {
       console.log("Error fetching summoner data:", e);
       Alert.alert("Error", "Summoner name not found or API issue. Check your input.");
@@ -142,16 +142,16 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
         <View className="flex-row items-center mb-4 w-full">
           <TextInput
-            value={username}
-            onChangeText={setUsername}
+            value={gameName}
+            onChangeText={setGameName}
             placeholder="Summoner name"
             placeholderTextColor="#aaa"
             className="flex-1 bg-leaguePanel text-white rounded-l-xl px-4 py-3"
           />
           <TextInput
-            value={tag}
-            onChangeText={setTag}
-            placeholder="#Tag"
+            value={tagLine}
+            onChangeText={setTagLine}
+            placeholder="#tagLine"
             placeholderTextColor="#aaa"
             className="w-48 bg-leaguePanel text-white rounded-r-xl px-2 py-3 border-l-2 border-transparent"
           />
