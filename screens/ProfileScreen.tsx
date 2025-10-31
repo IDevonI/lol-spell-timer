@@ -6,9 +6,9 @@ import { getProfile } from "../services/riotService";
 import { View, Text } from "react-native";
 
 
-type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
+interface ProfileScreenProps extends NativeStackScreenProps<RootStackParamList, 'Profile'> {};
 
-export default function ProfileScreen({ navigation, route }: ProfileScreenProps) {
+const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
     const { account } = route.params;
     const [profile, setProfile] = useState<Profile>({} as Profile);
     const [loading, setLoading] = useState<boolean>(true);
@@ -44,3 +44,5 @@ export default function ProfileScreen({ navigation, route }: ProfileScreenProps)
         </View>
     );
 }
+
+export default ProfileScreen;

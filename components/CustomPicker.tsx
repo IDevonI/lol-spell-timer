@@ -1,7 +1,7 @@
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, View, Text, Modal, FlatList } from "react-native";
+import { TouchableOpacity, View, Text, FlatList, Pressable } from "react-native";
 
 interface CustomPickerProps<T> {
     items: T[];
@@ -10,13 +10,12 @@ interface CustomPickerProps<T> {
     onDelete?: (key: string) => void;
     renderItemLabel: (item: T) => string;
     keyExtractor: (item: T, index: number) => string;
-    navigation?: any;
     placeholder?: string;
     onPressButton?: () => void;
 }
 
 const CustomPicker = <T,>(props: CustomPickerProps<T>) => {
-    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
     const [triggerLabel, setTriggerLabel] = useState<string>("");
 
     useEffect(() => {
@@ -27,47 +26,44 @@ const CustomPicker = <T,>(props: CustomPickerProps<T>) => {
     }, [])
 
     return (
-        <View className="flex-row items-center bg-leaguePanel rounded-xl mb-8 w-full">
-            <TouchableOpacity
-                className="flex-1 p-3"
-                onPress={() => setModalVisible(true)}
-            >
-                <Text style={{ color: "white" }}>{triggerLabel}</Text>
-            </TouchableOpacity>
-            {props.onPressButton && (
-                <TouchableOpacity
-                    activeOpacity={0.85}
-                    onPress={props.onPressButton}
-                    className="overflow-hidden border-2 border-leagueGold items-center justify-center rounded-r-xl"
-                >
-                    <LinearGradient
-                        colors={["#1b1b1b", "#2b2b2b"]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 0, y: 1 }}
-                        className="w-12 h-14 items-center justify-center"
+        <>
+            <Pressable className="absolute inset-0 z-8" onPress={() => setDropdownVisible(false)} />
+            <View className="relative flex flex-column w-full">
+                <View className={`flex-row items-center bg-leaguePanel w-full border-2 border-leagueGold ${dropdownVisible ? 'rounded-t-xl' : 'rounded-xl'}`}>
+                    <TouchableOpacity
+                        className="flex-1 p-3"
+                        onPress={() => setDropdownVisible(true)}
                     >
-                        <FontAwesome6 name="plus" iconStyle="solid" color="#c8aa6e" size={18} />
-                    </LinearGradient>
-                </TouchableOpacity>
-            )}
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View className="flex-1 justify-center items-center bg-black/50">
-                    <View className="bg-leaguePanel rounded-xl p-4 w-4/5">
+                        <Text style={{ color: "white" }}>{triggerLabel}</Text>
+                    </TouchableOpacity>
+                    {props.onPressButton && (
+                        <TouchableOpacity
+                            activeOpacity={0.85}
+                            onPress={props.onPressButton}
+                            className={`overflow-hidden border-l-2 border-leagueGold items-center justify-center ${dropdownVisible ? 'rounded-tr-xl' : 'rounded-r-xl'}`}
+                        >
+                            <LinearGradient
+                                colors={["#1b1b1b", "#2b2b2b"]}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 0, y: 1 }}
+                                className="w-12 h-14 items-center justify-center"
+                            >
+                                <FontAwesome6 name="plus" iconStyle="solid" color="#c8aa6e" size={18} />
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    )}
+                </View>
+                {dropdownVisible && (
+                    <View className="absolute top-full z-10 w-full flex overflow-y-scroll bg-leaguePanel rounded-b-xl border-2 border-leagueGold p-3">
                         <FlatList
-                            data={props.items}
+                            data={props.items.filter(value => props.keyExtractor(value, 0) !== (props.selectedItem ? props.keyExtractor(props.selectedItem, 0) : null))}
                             keyExtractor={props.keyExtractor}
-                            renderItem={({ item }) => (
-                                <View className="flex-row items-center justify-between py-2">
+                            renderItem={({ item, index }) => (
+                                <View className={`flex-row items-center justify-between py-2 ${index && 'border-t border-leagueGold'}`}>
                                     <TouchableOpacity
                                         onPress={() => {
                                             props.onSelect(item);
-                                            setModalVisible(false);
+                                            setDropdownVisible(false);
                                         }}
                                     >
                                         <Text style={{ color: "white" }}>{props.renderItemLabel(item)}</Text>
@@ -84,16 +80,10 @@ const CustomPicker = <T,>(props: CustomPickerProps<T>) => {
                             )}
                             ListEmptyComponent={<Text style={{ color: "white" }}>No items available</Text>}
                         />
-                        <TouchableOpacity
-                            onPress={() => setModalVisible(false)}
-                            className="mt-4 p-2 bg-red-500 rounded"
-                        >
-                            <Text className="text-white text-center">Close</Text>
-                        </TouchableOpacity>
                     </View>
-                </View>
-            </Modal>
-        </View>
+                )}
+            </View>
+        </>
     )
 };
 

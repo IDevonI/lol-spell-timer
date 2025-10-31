@@ -13,15 +13,17 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Account } from '../types/index';
 import CustomPicker from "../components/CustomPicker";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const STORAGE_KEY = "@lol_accounts";
 
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+interface HomeScreenProps extends NativeStackScreenProps<RootStackParamList, 'Home'> { };
 
-export default function HomeScreen({ navigation }: HomeScreenProps) {
+const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [savedAccounts, setSavedAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account>({} as Account);
   const [fontsLoaded] = useFonts({ Cinzel_700Bold });
+  const [deleteModal, setDeleteModal] = useState<{ visible: boolean, puuid?: string }>({ visible: false });
 
   useEffect(() => {
     (async () => {
@@ -45,27 +47,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     }
   };
 
-  const handleDeleteAccount = async (puuidToDelete: string) => {
-    Alert.alert(
-      "Confirm Delete",
-      "Are you sure you want to delete this account?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            const updatedAccounts = savedAccounts.filter(
-              (account) => account.puuid !== puuidToDelete
-            );
-            setSavedAccounts(updatedAccounts);
-            await saveAccountsToStorage(updatedAccounts);
-            setSelectedAccount(updatedAccounts[0] || ({} as Account));
-            if (updatedAccounts.length === 0) setSelectedAccount({} as Account);
-          },
-        },
-      ]
+  const handleDeleteAccount = async () => {
+    const updatedAccounts = savedAccounts.filter(
+      (account) => account.puuid !== deleteModal.puuid
     );
+    setSavedAccounts(updatedAccounts);
+    await saveAccountsToStorage(updatedAccounts);
+    setSelectedAccount(updatedAccounts[0] || ({} as Account));
+    if (updatedAccounts.length === 0) setSelectedAccount({} as Account);
   };
 
   const saveAccountsToStorage = async (accounts: Account[]) => {
@@ -97,7 +86,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     >
       <LinearGradient
         colors={["#0a1020", "rgba(0,0,0,0.8)", "transparent"]}
-        className="flex-1 justify-center items-center px-8"
+        className="flex-1 justify-center items-center px-8 overflow-visible"
       >
         <View className="absolute top-16 w-full items-center">
           <Text
@@ -121,10 +110,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           items={savedAccounts}
           selectedItem={selectedAccount}
           onSelect={handelSelectAccount}
-          onDelete={handleDeleteAccount}
+          onDelete={(puuid) => setDeleteModal({ visible: true, puuid })}
           renderItemLabel={(account: Account) => `${account.gameName}#${account.tagLine} (${account.region})`}
           keyExtractor={(item: Account, index) => item.puuid || index.toString()}
-          navigation={navigation}
           placeholder="Select an account"
           onPressButton={handleAddAccount}
         />
@@ -132,7 +120,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={handleNext}
-          className="overflow-hidden shadow-lg shadow-black/40 w-64 mt-4"
+          className="shadow-lg shadow-black/40 w-64 mt-4"
         >
           <LinearGradient
             colors={["#1b1b1b", "#2b2b2b"]}
@@ -149,6 +137,16 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </LinearGradient>
         </TouchableOpacity>
       </LinearGradient>
+
+      <ConfirmDialog
+        visible={deleteModal.visible}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this account?"
+        onConfirm={handleDeleteAccount}
+        onCancel={() => setDeleteModal({ visible: false })}
+      />
     </ImageBackground>
   );
 }
+
+export default HomeScreen;

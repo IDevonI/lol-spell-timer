@@ -32,9 +32,9 @@ const regions = [
 
 const STORAGE_KEY = "@lol_accounts";
 
-type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
+interface LoginScreenProps extends NativeStackScreenProps<RootStackParamList, 'Login'> {};
 
-export default function LoginScreen({ navigation }: LoginScreenProps) {
+const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [gameName, setGameName] = useState("");
   const [tagLine, setTagLine] = useState("");
   const [region, setRegion] = useState("euw1");
@@ -97,7 +97,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       setGameName("");
       setTagLine("");
       setRegion("euw1");
-      navigation.goBack();
+      navigation.navigate("Home");
     } catch (e) {
       console.log("Error fetching summoner data:", e);
       Alert.alert("Error", "Summoner name not found or API issue. Check your input.");
@@ -193,3 +193,5 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     </ImageBackground>
   );
 }
+
+export default LoginScreen;

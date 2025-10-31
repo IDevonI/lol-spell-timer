@@ -1,5 +1,7 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
+import { RootStackParamList } from '../types/navigation';
 
 interface Champion {
   id: string;
@@ -7,8 +9,10 @@ interface Champion {
   spells: string[];
 }
 
-export default function GameScreen({ route }: any) {
-  const { summoner } = route.params;
+interface GameScreenProps extends NativeStackScreenProps<RootStackParamList, 'Game'> {};
+
+const GameScreen = ({ route }: GameScreenProps) => {
+  const { account } = route.params
   const [champions, setChampions] = useState<Champion[]>([]);
   const [spells, setSpells] = useState<any>({});
 
@@ -28,7 +32,7 @@ export default function GameScreen({ route }: any) {
   return (
     <View className="flex-1 bg-[#0A1428] p-4">
       <Text className="text-yellow-400 text-2xl font-bold mb-4">
-        Current Game for {summoner}
+        Current Game for {account.gameName}
       </Text>
 
       <FlatList
@@ -58,3 +62,5 @@ export default function GameScreen({ route }: any) {
     </View>
   );
 }
+
+export default GameScreen;
