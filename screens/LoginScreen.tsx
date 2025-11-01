@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   ImageBackground,
-  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
@@ -15,6 +14,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Account } from '../types/index';
 import { getAccount } from '../services/riotService';
+import { Alert } from "../utils/Alert";
 
 const regions = [
   { label: "EU West (EUW1)", value: "euw1" },
@@ -32,7 +32,7 @@ const regions = [
 
 const STORAGE_KEY = "@lol_accounts";
 
-interface LoginScreenProps extends NativeStackScreenProps<RootStackParamList, 'Login'> {};
+interface LoginScreenProps extends NativeStackScreenProps<RootStackParamList, 'Login'> { };
 
 const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [gameName, setGameName] = useState("");
@@ -59,23 +59,23 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newAccounts));
     } catch (e) {
       console.log("Error saving accounts:", e);
-      Alert.alert("Error", "Failed to save account. Try again.");
+      Alert.error("Error", "Failed to save account. Try again.");
     }
   };
 
   const handleSave = async () => {
     if (!gameName.trim() || !tagLine.trim()) {
-      Alert.alert("Warning", "Please enter both Summoner Name and tagLine.");
+      Alert.warn("Warning", "Please enter both Summoner Name and tagLine.");
       return;
     }
 
     try {
-      const summonerData = await getAccount(gameName.trim(), tagLine.trim());
+      const account: Account = await getAccount(gameName.trim(), tagLine.trim());
 
       const exists = accounts.find(
         (acc) =>
-          acc.gameName.toLowerCase() === gameName.toLowerCase() &&
-          acc.tagLine === tagLine &&
+          acc.gameName === account.gameName &&
+          acc.tagLine === account.tagLine &&
           acc.region === region
       );
 
@@ -84,23 +84,24 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       }
 
       const newAccount: Account = {
-        gameName,
-        tagLine,
+        gameName: account.gameName,
+        tagLine: account.tagLine,
         region,
-        puuid: summonerData.puuid,
+        puuid: account.puuid,
       };
       const updatedAccounts = [...accounts, newAccount];
       setAccounts(updatedAccounts);
       await saveAccountsToStorage(updatedAccounts);
 
-      Alert.alert("Success", "Account saved!");
+      Alert.success("Success", "Account saved!");
       setGameName("");
       setTagLine("");
       setRegion("euw1");
       navigation.navigate("Home");
     } catch (e) {
       console.log("Error fetching summoner data:", e);
-      Alert.alert("Error", "Summoner name not found or API issue. Check your input.");
+      Alert.error("Error", "Summoner name not found or API issue. Check your input.");
+      Alert.error("Error", "Summoner name not found or API issue. Check your input.");
     }
   };
 

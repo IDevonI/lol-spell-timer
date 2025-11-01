@@ -11,6 +11,6 @@
     "App.tsx",
     "screens/**/*",
     "components/**/*"
-  ],
+, "context/AlertContext.tsx"  ],
   "extends": "expo/tsconfig.base"
 }

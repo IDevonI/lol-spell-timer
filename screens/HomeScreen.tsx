@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   ImageBackground,
-  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,6 +13,7 @@ import { RootStackParamList } from '../types/navigation';
 import { Account } from '../types/index';
 import CustomPicker from "../components/CustomPicker";
 import ConfirmDialog from "../components/ConfirmDialog";
+import { Alert } from "../utils/Alert";
 
 const STORAGE_KEY = "@lol_accounts";
 
@@ -43,17 +43,19 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     if (selectedAccount.puuid) {
       navigation.navigate('Profile', { account: selectedAccount });
     } else {
-      Alert.alert("Error", "No account selected or available.");
+      Alert.error("Error", "No account selected or available.");
     }
   };
 
   const handleDeleteAccount = async () => {
+    setDeleteModal({ visible: false })
     const updatedAccounts = savedAccounts.filter(
       (account) => account.puuid !== deleteModal.puuid
     );
     setSavedAccounts(updatedAccounts);
     await saveAccountsToStorage(updatedAccounts);
     setSelectedAccount(updatedAccounts[0] || ({} as Account));
+    setDeleteModal({ visible: false });
     if (updatedAccounts.length === 0) setSelectedAccount({} as Account);
   };
 
@@ -62,7 +64,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
     } catch (e) {
       console.log("Error saving accounts:", e);
-      Alert.alert("Error", "Failed to save accounts.");
+      Alert.error("Error", "Failed to save accounts.");
     }
   };
 
