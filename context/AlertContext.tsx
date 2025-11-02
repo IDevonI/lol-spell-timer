@@ -38,9 +38,15 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AlertContext.Provider value={{ show }}>
       {children}
-      <View className="pointer-events-none">
-        {alerts.map(alert => (
-          <View key={alert.id} className="pointer-events-auto">
+      <View className="absolute inset-0 pointer-events-none">
+        {alerts.map((alert, index) => (
+          <View
+            key={alert.id}
+            className="absolute w-full h-full"
+            style={{
+              bottom: index * 50,
+              zIndex: 1000 - index,
+            }}>
             <Alert
               visible={true}
               type={alert.type}
