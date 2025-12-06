@@ -38,25 +38,29 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AlertContext.Provider value={{ show }}>
       {children}
-      <View className="absolute inset-0 pointer-events-none">
-        {alerts.map((alert, index) => (
-          <View
-            key={alert.id}
-            className="absolute w-full h-full"
-            style={{
-              bottom: index * 50,
-              zIndex: 1000 - index,
-            }}>
-            <Alert
-              visible={true}
-              type={alert.type}
-              title={alert.title}
-              message={alert.message}
-              onClose={() => remove(alert.id)}
-            />
+      {alerts.length > 0 && (
+        <View className="absolute inset-0 pointer-events-none bg-black/40">
+          <View className="flex-1 justify-center items-center">
+            {alerts.map((alert, index) => (
+              <View
+                key={alert.id}
+                className="w-full items-center"
+                style={{
+                  marginTop: index === 0 ? 0 : index * 12,
+                  zIndex: 1000 - index,
+                }}>
+                <Alert
+                  visible={true}
+                  type={alert.type}
+                  title={alert.title}
+                  message={alert.message}
+                  onClose={() => remove(alert.id)}
+                />
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
+        </View>
+      )}
     </AlertContext.Provider>
   )
 };

@@ -43,7 +43,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     if (selectedAccount.puuid) {
       navigation.navigate('Profile', { account: selectedAccount });
     } else {
-      Alert.error("Error", "No account selected or available.");
+      Alert.warn("Warning", "No account selected or available.");
     }
   };
 

@@ -101,7 +101,6 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
     } catch (e) {
       console.log("Error fetching summoner data:", e);
       Alert.error("Error", "Summoner name not found or API issue. Check your input.");
-      Alert.error("Error", "Summoner name not found or API issue. Check your input.");
     }
   };
 

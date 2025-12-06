@@ -17,7 +17,6 @@ const GameScreen = ({ route }: GameScreenProps) => {
   const [spells, setSpells] = useState<any>({});
 
   useEffect(() => {
-    // Fetch Data Dragon data
     const fetchData = async () => {
       const champRes = await fetch('https://ddragon.leagueoflegends.com/cdn/14.21.1/data/en_US/champion.json');
       const spellRes = await fetch('https://ddragon.leagueoflegends.com/cdn/14.21.1/data/en_US/summoner.json');
@@ -36,7 +35,7 @@ const GameScreen = ({ route }: GameScreenProps) => {
       </Text>
 
       <FlatList
-        data={champions.slice(0, 10)} // mock 10 players
+        data={champions.slice(0, 10)}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View className="flex-row items-center mb-3 bg-[#16213E] p-3 rounded-2xl">

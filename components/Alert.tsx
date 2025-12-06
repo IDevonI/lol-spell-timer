@@ -39,7 +39,7 @@ const Alert = (props: AlertProps) => {
   if (!fontsLoaded) return null;
 
   return (
-    <View className="flex-1 justify-center items-center bg-black/40 px-4">
+    <View className="px-4 w-full items-center">
       <LinearGradient colors={gradientMap[props.type]} className="w-3/4 rounded-xl p-6 border-2 border-leagueGold overflow-hidden">
         <Text className="text-leagueGold text-xl mb-2 text-center" style={{ fontFamily: 'Cinzel_700Bold' }}>
           {props.title}
