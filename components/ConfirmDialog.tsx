@@ -25,6 +25,7 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
             <Text className="text-leagueGold text-xl mb-2 text-center" style={{ fontFamily: 'Cinzel_700Bold' }}>
               {props.title}
             </Text>
+            <FontAwesome6 name="trash-can" size={48} color="#c8aa6e" style={{ alignSelf: 'center', marginBottom: 16 }} />
             <Text className="text-white text-base mb-6 text-center">
               {props.message}
             </Text>

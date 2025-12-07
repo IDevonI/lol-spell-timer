@@ -23,7 +23,7 @@ const iconMap = {
 
 const gradientMap = {
   info: ['#1c2541', '#2b2b2b'],
-  warn: ['#f1d13fff', '#2b2b2b'],
+  warn: ['#99430e', '#2b2b2b'],
   error: ['#8B0000', '#2b2b2b'],
   success: ['#0e6d16ff', '#2b2b2b']
 } as const;

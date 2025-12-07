@@ -30,6 +30,9 @@
     "expo": {
       "web": {
         "bundler": "metro"
+      },
+      "extra": {
+        "dataDragonVersion": "15.24.1"
       }
     },
     "plugins": [

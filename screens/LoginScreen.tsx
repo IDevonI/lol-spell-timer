@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -106,91 +107,95 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
   if (!fontsLoaded) {
     return (
-      <View className="flex-1 justify-center items-center bg-leagueNavy">
-        <Text className="text-white">Loading fonts...</Text>
-      </View>
+      <SafeAreaView className="flex-1 justify-center items-center bg-leagueNavy" edges={['top', 'left', 'right']}>
+        <View className="flex-1 justify-center items-center bg-leagueNavy">
+          <Text className="text-white">Loading fonts...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ImageBackground
-      source={require("../assets/bg.jpg")}
-      resizeMode="cover"
-      className="flex-1"
-    >
-      <LinearGradient
-        colors={["#0a1020", "rgba(0,0,0,0.8)", "transparent"]}
-        className="flex-1 justify-center items-center px-8"
+    <SafeAreaView className="flex-1 bg-leagueNavy" edges={['top', 'left', 'right']}>
+      <ImageBackground
+        source={require("../assets/bg.jpg")}
+        resizeMode="cover"
+        className="flex-1"
       >
-        <View className="absolute top-16 w-full items-center">
-          <Text
-            className="text-leagueGold text-4xl text-center leading-tight"
-            style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
-          >
-            LoL{"\n"}Spell Timer
-          </Text>
-        </View>
-
-        <View className="flex-row items-center mb-4 w-full">
-          <Text
-            className="text-leagueGold text-xl text-center leading-tight text-center w-full mb-2"
-            style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
-          >
-            Insert your info
-          </Text>
-        </View>
-
-        <View className="flex-row items-center mb-4 w-full">
-          <TextInput
-            value={gameName}
-            onChangeText={setGameName}
-            placeholder="Summoner name"
-            placeholderTextColor="#aaa"
-            className="flex-1 bg-leaguePanel text-white rounded-l-xl px-4 py-3"
-          />
-          <TextInput
-            value={tagLine}
-            onChangeText={setTagLine}
-            placeholder="#tagLine"
-            placeholderTextColor="#aaa"
-            className="w-48 bg-leaguePanel text-white rounded-r-xl px-2 py-3 border-l-2 border-transparent"
-          />
-        </View>
-
-        <View className="bg-leaguePanel rounded-xl mb-8 w-full">
-          <Picker
-            selectedValue={region}
-            onValueChange={(value) => setRegion(value)}
-            dropdownIconColor="white"
-            style={{ color: "white" }}
-          >
-            {regions.map((r) => (
-              <Picker.Item key={r.value} label={r.label} value={r.value} />
-            ))}
-          </Picker>
-        </View>
-
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={handleSave}
-          className="overflow-hidden shadow-lg shadow-black/40 w-full mt-4 px-10"
+        <LinearGradient
+          colors={["#0a1020", "rgba(0,0,0,0.8)", "transparent"]}
+          className="flex-1 justify-center items-center px-8"
         >
-          <LinearGradient
-            colors={["#1b1b1b", "#2b2b2b"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            className="border-2 border-leagueGold py-3 items-center justify-center"
-          >
+          <View className="absolute top-16 w-full items-center">
             <Text
-              className="text-leagueGold text-lg font-bold"
-              style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 1 }}
+              className="text-leagueGold text-4xl text-center leading-tight"
+              style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
             >
-              Save
+              LoL{"\n"}Spell Timer
             </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </LinearGradient>
-    </ImageBackground>
+          </View>
+
+          <View className="flex-row items-center mb-4 w-full">
+            <Text
+              className="text-leagueGold text-xl text-center leading-tight w-full mb-2"
+              style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
+            >
+              Insert your info
+            </Text>
+          </View>
+
+          <View className="flex-row items-center mb-4 w-full">
+            <TextInput
+              value={gameName}
+              onChangeText={setGameName}
+              placeholder="Summoner name"
+              placeholderTextColor="#aaa"
+              className="flex-1 bg-leaguePanel text-white rounded-l-xl px-4 py-3"
+            />
+            <TextInput
+              value={tagLine}
+              onChangeText={setTagLine}
+              placeholder="#tagLine"
+              placeholderTextColor="#aaa"
+              className="w-48 bg-leaguePanel text-white rounded-r-xl px-2 py-3 border-l-2 border-transparent"
+            />
+          </View>
+
+          <View className="bg-leaguePanel rounded-xl mb-8 w-full">
+            <Picker
+              selectedValue={region}
+              onValueChange={(value) => setRegion(value)}
+              dropdownIconColor="white"
+              style={{ color: "white" }}
+            >
+              {regions.map((r) => (
+                <Picker.Item key={r.value} label={r.label} value={r.value} />
+              ))}
+            </Picker>
+          </View>
+
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={handleSave}
+            className="overflow-hidden shadow-lg shadow-black/40 w-full mt-4 px-10"
+          >
+            <LinearGradient
+              colors={["#1b1b1b", "#2b2b2b"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              className="border-2 border-leagueGold py-3 items-center justify-center"
+            >
+              <Text
+                className="text-leagueGold text-lg font-bold"
+                style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 1 }}
+              >
+                Save
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </LinearGradient>
+      </ImageBackground>
+    </SafeAreaView>
   );
 }
 
