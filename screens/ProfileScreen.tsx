@@ -6,6 +6,7 @@ import { getProfile } from "../services/riotService";
 import { View, Text, Image, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getProfileIconUrl, getTierEmblemUrl, getTierWingUrl } from "../utils/DataDragon";
+import Accordion from "../components/Accordion";
 
 
 interface ProfileScreenProps extends NativeStackScreenProps<RootStackParamList, 'Profile'> { };
@@ -82,7 +83,9 @@ const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
                         </View>
                     </View>
 
+                    <Accordion title="Ranked Information" className="-mt-6">
                     {
+                        
                         profile.leagueEntries.map((entry, index) => (
                             <View key={index} className="items-center -mt-24">
                                 <Image
@@ -99,6 +102,7 @@ const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
                             </View>
                         ))
                     }
+                    </Accordion>
 
                     {/* <Text className="text-yellow-400">
                         {JSON.stringify(profile, null, 2)}
