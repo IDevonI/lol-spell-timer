@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://192.168.0.18:3000/api/riot';
+const API_BASE_URL = 'http://192.168.0.19:3000/api/riot';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

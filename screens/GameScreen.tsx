@@ -1,5 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
 import { RootStackParamList } from '../types/navigation';
 
@@ -9,7 +10,7 @@ interface Champion {
   spells: string[];
 }
 
-interface GameScreenProps extends NativeStackScreenProps<RootStackParamList, 'Game'> {};
+interface GameScreenProps extends NativeStackScreenProps<RootStackParamList, 'Game'> { };
 
 const GameScreen = ({ route }: GameScreenProps) => {
   const { account } = route.params
@@ -17,7 +18,6 @@ const GameScreen = ({ route }: GameScreenProps) => {
   const [spells, setSpells] = useState<any>({});
 
   useEffect(() => {
-    // Fetch Data Dragon data
     const fetchData = async () => {
       const champRes = await fetch('https://ddragon.leagueoflegends.com/cdn/14.21.1/data/en_US/champion.json');
       const spellRes = await fetch('https://ddragon.leagueoflegends.com/cdn/14.21.1/data/en_US/summoner.json');
@@ -30,36 +30,38 @@ const GameScreen = ({ route }: GameScreenProps) => {
   }, []);
 
   return (
-    <View className="flex-1 bg-[#0A1428] p-4">
-      <Text className="text-yellow-400 text-2xl font-bold mb-4">
-        Current Game for {account.gameName}
-      </Text>
+    <SafeAreaView className="flex-1 bg-[#0A1428] px-4" edges={['top', 'left', 'right']}>
+      <View className="flex-1 bg-[#0A1428] p-4">
+        <Text className="text-yellow-400 text-2xl font-bold mb-4">
+          Current Game for {account.gameName}
+        </Text>
 
-      <FlatList
-        data={champions.slice(0, 10)} // mock 10 players
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View className="flex-row items-center mb-3 bg-[#16213E] p-3 rounded-2xl">
-            <Image
-              source={{ uri: `https://ddragon.leagueoflegends.com/cdn/14.21.1/img/champion/${item.id}.png` }}
-              style={{ width: 48, height: 48, borderRadius: 8, marginRight: 8 }}
-            />
-            <Text className="text-white flex-1">{item.name}</Text>
+        <FlatList
+          data={champions.slice(0, 10)}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View className="flex-row items-center mb-3 bg-[#16213E] p-3 rounded-2xl">
+              <Image
+                source={{ uri: `https://ddragon.leagueoflegends.com/cdn/14.21.1/img/champion/${item.id}.png` }}
+                style={{ width: 48, height: 48, borderRadius: 8, marginRight: 8 }}
+              />
+              <Text className="text-white flex-1">{item.name}</Text>
 
-            <View className="flex-row">
-              {['SummonerFlash', 'SummonerHeal'].map((spellId) => (
-                <TouchableOpacity key={spellId} className="mx-1">
-                  <Image
-                    source={{ uri: `https://ddragon.leagueoflegends.com/cdn/14.21.1/img/spell/${spellId}.png` }}
-                    style={{ width: 50, height: 50, borderRadius: 6 }}
-                  />
-                </TouchableOpacity>
-              ))}
+              <View className="flex-row">
+                {['SummonerFlash', 'SummonerHeal'].map((spellId) => (
+                  <TouchableOpacity key={spellId} className="mx-1">
+                    <Image
+                      source={{ uri: `https://ddragon.leagueoflegends.com/cdn/14.21.1/img/spell/${spellId}.png` }}
+                      style={{ width: 50, height: 50, borderRadius: 6 }}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          </View>
-        )}
-      />
-    </View>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 

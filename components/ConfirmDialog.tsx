@@ -21,46 +21,46 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
     <Modal transparent visible={props.visible} animationType="fade">
       <Pressable className="flex-1 bg-black/70 justify-center items-center" onPress={props.onCancel}>
         <Pressable className="w-11/12 max-w-md" onPress={() => { }}>
-          <LinearGradient colors={['#1c2541', '#0a1020']} className="rounded-xl p-6 border-2 border-leagueGold overflow-hidden">
+          <LinearGradient colors={['#1b1b1b', '#2b2b2b']} className="rounded-xl p-6 border-2 border-leagueGold overflow-hidden">
             <Text className="text-leagueGold text-xl mb-2 text-center" style={{ fontFamily: 'Cinzel_700Bold' }}>
               {props.title}
             </Text>
+            <FontAwesome6 name="trash-can" size={48} color="#c8aa6e" style={{ alignSelf: 'center', marginBottom: 16 }} />
             <Text className="text-white text-base mb-6 text-center">
               {props.message}
             </Text>
             <View className="flex-row justify-center gap-4">
               <TouchableOpacity
                 activeOpacity={0.85}
-                onPress={props.onCancel}
+                onPress={props.onConfirm}
                 className="flex-1"
               >
                 <LinearGradient
-                  colors={['#2b2b2b', '#1b1b1b']}
-                  className="py-3 rounded-lg border border-leagueBlunt items-center overflow-hidden"
+                  colors={[ '#0e6d16ff', '#309127ff']}
+                  className="py-3 rounded-lg border items-center overflow-hidden"
                 >
                   <Text
-                    className="text-leagueBlunt font-bold"
+                    className="text-white font-bold"
                     style={{ fontFamily: 'Cinzel_700Bold' }}
                   >
-                    {props.cancelLabel}
+                    {props.confirmLabel || "Confirm"}
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.85}
-                onPress={props.onConfirm}
+                onPress={props.onCancel}
                 className="flex-1"
               >
                 <LinearGradient
                   colors={['#8B0000', '#B22222']}
-                  className="py-3 rounded-lg border border-red-800 items-center flex-row justify-center gap-2 overflow-hidden"
+                  className="py-3 rounded-lg border items-center flex-row justify-center gap-2 overflow-hidden"
                 >
-                  <FontAwesome6 name="trash" size={16} color="#fff" iconStyle="solid" />
                   <Text
                     className="text-white font-bold"
                     style={{ fontFamily: 'Cinzel_700Bold' }}
                   >
-                    {props.confirmLabel}
+                    {props.cancelLabel || "Cancel"}
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>

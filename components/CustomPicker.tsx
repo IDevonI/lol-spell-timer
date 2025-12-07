@@ -23,7 +23,7 @@ const CustomPicker = <T,>(props: CustomPickerProps<T>) => {
             ? props.renderItemLabel(props.selectedItem)
             : props.placeholder || "Select an item";
         setTriggerLabel(triggerLabel);
-    }, [])
+    }, [props.selectedItem, props.placeholder]);
 
     return (
         <>

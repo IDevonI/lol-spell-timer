@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ImageBackground,
-  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
@@ -15,6 +15,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { Account } from '../types/index';
 import { getAccount } from '../services/riotService';
+import { Alert } from "../utils/Alert";
 
 const regions = [
   { label: "EU West (EUW1)", value: "euw1" },
@@ -32,7 +33,7 @@ const regions = [
 
 const STORAGE_KEY = "@lol_accounts";
 
-interface LoginScreenProps extends NativeStackScreenProps<RootStackParamList, 'Login'> {};
+interface LoginScreenProps extends NativeStackScreenProps<RootStackParamList, 'Login'> { };
 
 const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [gameName, setGameName] = useState("");
@@ -59,23 +60,23 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newAccounts));
     } catch (e) {
       console.log("Error saving accounts:", e);
-      Alert.alert("Error", "Failed to save account. Try again.");
+      Alert.error("Error", "Failed to save account. Try again.");
     }
   };
 
   const handleSave = async () => {
     if (!gameName.trim() || !tagLine.trim()) {
-      Alert.alert("Warning", "Please enter both Summoner Name and tagLine.");
+      Alert.warn("Warning", "Please enter both Summoner Name and tagLine.");
       return;
     }
 
     try {
-      const summonerData = await getAccount(gameName.trim(), tagLine.trim());
+      const account: Account = await getAccount(gameName.trim(), tagLine.trim());
 
       const exists = accounts.find(
         (acc) =>
-          acc.gameName.toLowerCase() === gameName.toLowerCase() &&
-          acc.tagLine === tagLine &&
+          acc.gameName === account.gameName &&
+          acc.tagLine === account.tagLine &&
           acc.region === region
       );
 
@@ -84,113 +85,117 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       }
 
       const newAccount: Account = {
-        gameName,
-        tagLine,
+        gameName: account.gameName,
+        tagLine: account.tagLine,
         region,
-        puuid: summonerData.puuid,
+        puuid: account.puuid,
       };
       const updatedAccounts = [...accounts, newAccount];
       setAccounts(updatedAccounts);
       await saveAccountsToStorage(updatedAccounts);
 
-      Alert.alert("Success", "Account saved!");
+      Alert.success("Success", "Account saved!");
       setGameName("");
       setTagLine("");
       setRegion("euw1");
       navigation.navigate("Home");
     } catch (e) {
       console.log("Error fetching summoner data:", e);
-      Alert.alert("Error", "Summoner name not found or API issue. Check your input.");
+      Alert.error("Error", "Summoner name not found or API issue. Check your input.");
     }
   };
 
   if (!fontsLoaded) {
     return (
-      <View className="flex-1 justify-center items-center bg-leagueNavy">
-        <Text className="text-white">Loading fonts...</Text>
-      </View>
+      <SafeAreaView className="flex-1 justify-center items-center bg-leagueNavy" edges={['top', 'left', 'right']}>
+        <View className="flex-1 justify-center items-center bg-leagueNavy">
+          <Text className="text-white">Loading fonts...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ImageBackground
-      source={require("../assets/bg.jpg")}
-      resizeMode="cover"
-      className="flex-1"
-    >
-      <LinearGradient
-        colors={["#0a1020", "rgba(0,0,0,0.8)", "transparent"]}
-        className="flex-1 justify-center items-center px-8"
+    <SafeAreaView className="flex-1 bg-leagueNavy" edges={['top', 'left', 'right']}>
+      <ImageBackground
+        source={require("../assets/bg.jpg")}
+        resizeMode="cover"
+        className="flex-1"
       >
-        <View className="absolute top-16 w-full items-center">
-          <Text
-            className="text-leagueGold text-4xl text-center leading-tight"
-            style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
-          >
-            LoL{"\n"}Spell Timer
-          </Text>
-        </View>
-
-        <View className="flex-row items-center mb-4 w-full">
-          <Text
-            className="text-leagueGold text-xl text-center leading-tight text-center w-full mb-2"
-            style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
-          >
-            Insert your info
-          </Text>
-        </View>
-
-        <View className="flex-row items-center mb-4 w-full">
-          <TextInput
-            value={gameName}
-            onChangeText={setGameName}
-            placeholder="Summoner name"
-            placeholderTextColor="#aaa"
-            className="flex-1 bg-leaguePanel text-white rounded-l-xl px-4 py-3"
-          />
-          <TextInput
-            value={tagLine}
-            onChangeText={setTagLine}
-            placeholder="#tagLine"
-            placeholderTextColor="#aaa"
-            className="w-48 bg-leaguePanel text-white rounded-r-xl px-2 py-3 border-l-2 border-transparent"
-          />
-        </View>
-
-        <View className="bg-leaguePanel rounded-xl mb-8 w-full">
-          <Picker
-            selectedValue={region}
-            onValueChange={(value) => setRegion(value)}
-            dropdownIconColor="white"
-            style={{ color: "white" }}
-          >
-            {regions.map((r) => (
-              <Picker.Item key={r.value} label={r.label} value={r.value} />
-            ))}
-          </Picker>
-        </View>
-
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={handleSave}
-          className="overflow-hidden shadow-lg shadow-black/40 w-full mt-4 px-10"
+        <LinearGradient
+          colors={["#0a1020", "rgba(0,0,0,0.8)", "transparent"]}
+          className="flex-1 justify-center items-center px-8"
         >
-          <LinearGradient
-            colors={["#1b1b1b", "#2b2b2b"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            className="border-2 border-leagueGold py-3 items-center justify-center"
-          >
+          <View className="absolute top-16 w-full items-center">
             <Text
-              className="text-leagueGold text-lg font-bold"
-              style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 1 }}
+              className="text-leagueGold text-4xl text-center leading-tight"
+              style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
             >
-              Save
+              LoL{"\n"}Spell Timer
             </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </LinearGradient>
-    </ImageBackground>
+          </View>
+
+          <View className="flex-row items-center mb-4 w-full">
+            <Text
+              className="text-leagueGold text-xl text-center leading-tight w-full mb-2"
+              style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 2 }}
+            >
+              Insert your info
+            </Text>
+          </View>
+
+          <View className="flex-row items-center mb-4 w-full">
+            <TextInput
+              value={gameName}
+              onChangeText={setGameName}
+              placeholder="Summoner name"
+              placeholderTextColor="#aaa"
+              className="flex-1 bg-leaguePanel text-white rounded-l-xl px-4 py-3"
+            />
+            <TextInput
+              value={tagLine}
+              onChangeText={setTagLine}
+              placeholder="#tagLine"
+              placeholderTextColor="#aaa"
+              className="w-48 bg-leaguePanel text-white rounded-r-xl px-2 py-3 border-l-2 border-transparent"
+            />
+          </View>
+
+          <View className="bg-leaguePanel rounded-xl mb-8 w-full">
+            <Picker
+              selectedValue={region}
+              onValueChange={(value) => setRegion(value)}
+              dropdownIconColor="white"
+              style={{ color: "white" }}
+            >
+              {regions.map((r) => (
+                <Picker.Item key={r.value} label={r.label} value={r.value} />
+              ))}
+            </Picker>
+          </View>
+
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={handleSave}
+            className="overflow-hidden shadow-lg shadow-black/40 w-full mt-4 px-10"
+          >
+            <LinearGradient
+              colors={["#1b1b1b", "#2b2b2b"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              className="border-2 border-leagueGold py-3 items-center justify-center"
+            >
+              <Text
+                className="text-leagueGold text-lg font-bold"
+                style={{ fontFamily: "Cinzel_700Bold", letterSpacing: 1 }}
+              >
+                Save
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </LinearGradient>
+      </ImageBackground>
+    </SafeAreaView>
   );
 }
 
